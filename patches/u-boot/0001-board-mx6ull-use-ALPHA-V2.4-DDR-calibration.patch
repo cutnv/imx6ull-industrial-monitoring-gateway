@@ -1,0 +1,29 @@
+From 306f7b5bb585730894ce12a97fab5508ad763704 Mon Sep 17 00:00:00 2001
+From: akiha <wuxunan004@gmail.com>
+Date: Mon, 21 Sep 2026 21:44:25 +0800
+Subject: [PATCH 1/2] board: mx6ull: use ALPHA V2.4 DDR calibration
+
+---
+ board/freescale/mx6ullevk/imximage.cfg | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/board/freescale/mx6ullevk/imximage.cfg b/board/freescale/mx6ullevk/imximage.cfg
+index 0c6f444a..cc607526 100644
+--- a/board/freescale/mx6ullevk/imximage.cfg
++++ b/board/freescale/mx6ullevk/imximage.cfg
+@@ -79,9 +79,9 @@ DATA 4 0x020E0248 0x00000030
+ DATA 4 0x021B001C 0x00008000
+ DATA 4 0x021B0800 0xA1390003
+ DATA 4 0x021B080C 0x00000004
+-DATA 4 0x021B083C 0x41640158
+-DATA 4 0x021B0848 0x40403237
+-DATA 4 0x021B0850 0x40403C33
++DATA 4 0x021B083C 0x01380138
++DATA 4 0x021B0848 0x40402E32
++DATA 4 0x021B0850 0x40403432
+ DATA 4 0x021B081C 0x33333333
+ DATA 4 0x021B0820 0x33333333
+ DATA 4 0x021B082C 0xf3333333
+-- 
+2.43.0
+

@@ -46,7 +46,7 @@ Module.symvers
 modules.order
 System.map
 vmlinux
-u-boot
+/u-boot
 u-boot.bin
 u-boot-dtb.bin
 u-boot-dtb.imx
