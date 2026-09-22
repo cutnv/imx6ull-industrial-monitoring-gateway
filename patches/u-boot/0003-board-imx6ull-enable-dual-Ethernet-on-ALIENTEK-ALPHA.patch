@@ -1,0 +1,113 @@
+From 0a367de5158ef25c4a65f7028b0f9ba93882e0be Mon Sep 17 00:00:00 2001
+From: akiha <wuxunan004@gmail.com>
+Date: Tue, 22 Sep 2026 18:06:44 +0800
+Subject: [PATCH 3/3] board: imx6ull: enable dual Ethernet on ALIENTEK ALPHA
+
+---
+ arch/arm/dts/imx6ull-alientek-alpha.dts    | 44 ++++++++++++++++++++++
+ board/alientek/mx6ull_alpha/mx6ull_alpha.c |  5 +--
+ configs/mx6ull_alientek_alpha_defconfig    |  9 ++++-
+ 3 files changed, 53 insertions(+), 5 deletions(-)
+
+diff --git a/arch/arm/dts/imx6ull-alientek-alpha.dts b/arch/arm/dts/imx6ull-alientek-alpha.dts
+index 8d7c8e2d..989dd494 100644
+--- a/arch/arm/dts/imx6ull-alientek-alpha.dts
++++ b/arch/arm/dts/imx6ull-alientek-alpha.dts
+@@ -16,3 +16,47 @@
+ 	assigned-clocks = <&clks IMX6UL_CLK_PLL3_PFD2>;
+ 	assigned-clock-rates = <320000000>;
+ };
++
++/*
++ * ALPHA V2.4 uses two SMSC LAN8720A PHYs.
++ * Both PHYs are managed through the ENET2 MDIO bus.
++ */
++&fec1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_enet1 &pinctrl_fec1_reset>;
++	phy-reset-gpios = <&gpio5 7 GPIO_ACTIVE_LOW>;
++	phy-reset-duration = <200>;
++	phy-reset-post-delay = <20>;
++};
++
++&fec2 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_enet2 &pinctrl_fec2_reset>;
++	phy-reset-gpios = <&gpio5 8 GPIO_ACTIVE_LOW>;
++	phy-reset-duration = <200>;
++	phy-reset-post-delay = <20>;
++};
++
++&ethphy0 {
++	compatible = "ethernet-phy-ieee802.3-c22";
++	/delete-property/ micrel,led-mode;
++};
++
++&ethphy1 {
++	compatible = "ethernet-phy-ieee802.3-c22";
++	/delete-property/ micrel,led-mode;
++};
++
++&iomuxc_snvs {
++	pinctrl_fec1_reset: fec1resetgrp {
++		fsl,pins = <
++			MX6ULL_PAD_SNVS_TAMPER7__GPIO5_IO07	0x79
++		>;
++	};
++
++	pinctrl_fec2_reset: fec2resetgrp {
++		fsl,pins = <
++			MX6ULL_PAD_SNVS_TAMPER8__GPIO5_IO08	0x79
++		>;
++	};
++};
+diff --git a/board/alientek/mx6ull_alpha/mx6ull_alpha.c b/board/alientek/mx6ull_alpha/mx6ull_alpha.c
+index defb053c..26e17c05 100644
+--- a/board/alientek/mx6ull_alpha/mx6ull_alpha.c
++++ b/board/alientek/mx6ull_alpha/mx6ull_alpha.c
+@@ -79,8 +79,6 @@ static int setup_fec(int fec_id)
+ 
+ int board_phy_config(struct phy_device *phydev)
+ {
+-	phy_write(phydev, MDIO_DEVAD_NONE, 0x1f, 0x8190);
+-
+ 	if (phydev->drv->config)
+ 		phydev->drv->config(phydev);
+ 
+@@ -94,7 +92,8 @@ int board_init(void)
+ 	gd->bd->bi_boot_params = PHYS_SDRAM + 0x100;
+ 
+ #ifdef	CONFIG_FEC_MXC
+-	setup_fec(CFG_FEC_ENET_DEV);
++	setup_fec(0);
++	setup_fec(1);
+ #endif
+ 
+ 	return 0;
+diff --git a/configs/mx6ull_alientek_alpha_defconfig b/configs/mx6ull_alientek_alpha_defconfig
+index 40bd3efd..698a5dac 100644
+--- a/configs/mx6ull_alientek_alpha_defconfig
++++ b/configs/mx6ull_alientek_alpha_defconfig
+@@ -53,8 +53,8 @@ CONFIG_MTD=y
+ CONFIG_DM_SPI_FLASH=y
+ CONFIG_SPI_FLASH_STMICRO=y
+ CONFIG_PHYLIB=y
+-CONFIG_PHY_MICREL=y
+-CONFIG_PHY_MICREL_KSZ8XXX=y
++# CONFIG_PHY_MICREL is not set
++# CONFIG_PHY_MICREL_KSZ8XXX is not set
+ CONFIG_DM_ETH_PHY=y
+ CONFIG_FEC_MXC=y
+ CONFIG_MII=y
+@@ -71,3 +71,8 @@ CONFIG_DM_SPI=y
+ CONFIG_FSL_QSPI=y
+ CONFIG_SOFT_SPI=y
+ CONFIG_IMX_THERMAL=y
++CONFIG_PHY_SMSC=y
++CONFIG_CMD_MII=y
++CONFIG_CMD_MDIO=y
++CONFIG_FEC_MXC_SHARE_MDIO=y
++CONFIG_FEC_MXC_MDIO_BASE=0x20b4000
+-- 
+2.43.0
+
